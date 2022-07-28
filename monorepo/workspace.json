@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "projects": {
+    "auth-server": "apps/auth-server",
+    "front-mobile": "apps/front-mobile",
+    "gamification": "apps/gamification",
+    "quizz": "apps/quizz",
+    "integrationtesting": "apps/integrationtesting"
+  }
+}

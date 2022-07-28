@@ -1,0 +1,13 @@
+spring:
+  profiles:
+    group:
+      default: dev, common
+      prod: prod, common
+---
+server:
+  address: 0.0.0.0
+  addressBis: 127.0.0.1
+  port: 8085
+gamification:
+  address: 0.0.0.0
+  port: 8083

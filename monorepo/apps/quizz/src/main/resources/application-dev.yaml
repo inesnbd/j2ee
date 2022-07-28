@@ -1,0 +1,13 @@
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+        org.hibernate: DEBUG
+        web:
+          client:
+            RestTemplate: DEBUG
+spring:
+  mvc:
+    log-request-details: true
+    log-resolved-exception: true

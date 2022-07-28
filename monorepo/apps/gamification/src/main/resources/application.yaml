@@ -1,0 +1,26 @@
+url: http://localhost
+
+server:
+  port: 8083
+
+spring:
+  elasticsearch:
+    rest:
+      - url: http://localhost:9200
+      - username: elastic
+      - password: changeme
+
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
+
+  security:
+    oauth2:
+      resource:
+        filter-order: 3
+
+springdoc:
+  swagger-ui:
+    path: /api-docs
+    operationsSorter: method

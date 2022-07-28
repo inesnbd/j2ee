@@ -1,0 +1,102 @@
+{
+  "sourceRoot": "apps/auth-server/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/auth-server",
+        "main": "apps/auth-server/src/main.ts",
+        "tsConfig": "apps/auth-server/tsconfig.app.json",
+        "assets": [
+          "apps/auth-server/src/assets",
+          "apps/auth-server/src/views",
+          {
+            "glob": ".env*",
+            "input": "apps/auth-server/src/",
+            "output": ""
+          }
+        ],
+        "generatePackageJson": true
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "auth-server:build"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/auth-server/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/auth-server"],
+      "options": {
+        "jestConfig": "apps/auth-server/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "buildImage": {
+      "executor": "@nx-tools/nx-docker:build",
+      "dependsOn": ["build"],
+      "options": {
+        "push": true,
+        "metadata": {
+          "images": ["loicroux/auth-server"],
+          "tags": ["type=ref,event=branch", "type=ref,event=tag", "type=sha"]
+        }
+      }
+    },
+    "api": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "rm -rf apps/auth-server/gen/api",
+          "pnpm openapi-generator-cli generate -i 0.0.0.0:3333/api/docs-json --generator-name typescript-axios -o apps/auth-server/gen/api --config apps/auth-server/api.json",
+          "cd apps/auth-server && pnpm install && pnpm run build"
+        ]
+      }
+    },
+    "db:migrate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["npx sequelize-cli db:migrate"],
+        "cwd": "apps/auth-server"
+      }
+    },
+    "migration:generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["npx sequelize-cli migration:generate"],
+        "cwd": "apps/auth-server"
+      }
+    },
+    "version": {
+      "executor": "@jscutlery/semver:version",
+      "options": {
+        "postTargets": ["auth-server:github"]
+      }
+    },
+    "github": {
+      "executor": "@jscutlery/semver:github",
+      "options": {
+        "tag": "${tag}",
+        "notes": "${notes}"
+      }
+    }
+  },
+  "tags": []
+}
